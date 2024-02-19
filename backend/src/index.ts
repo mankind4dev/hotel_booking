@@ -48,7 +48,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/my-hotels", myHotelRoutes);
 
 //for all request to go to the exact route
-app.use("*", (req:Request, res:Response) => {
+app.get("*", (req:Request, res:Response) => {
   res.sendFile(path.join(__dirname, "../..frontend/dist/index.html"))
 })
 

@@ -4,6 +4,8 @@ import TypeSection from "./TypeSection";
 import FacilitiesSection from "./FacilitiesSection";
 import GuestSection from "./GuestSection";
 import ImagesSection from "./ImagesSection";
+import { HotelType } from "../../../../backend/src/shared/types";
+import { useEffect } from "react";
 
 export type HotelFormData = {
   name: string;
@@ -15,22 +17,33 @@ export type HotelFormData = {
   starRating: number;
   facilities: string[];
   imageFiles: FileList;
+  imageUrls: string[];
   adultCount: number;
   childCount: number;
 };
 
 type Props = {
+  hotel?: HotelType;
   onSave: (hotelFormData: FormData) => void;
   isLoading: boolean;
 };
 
-export default function ManageHotelForm({ onSave, isLoading }: Props) {
+export default function ManageHotelForm({ onSave, isLoading, hotel }: Props) {
   const formMethods = useForm<HotelFormData>();
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, reset } = formMethods;
+
+  useEffect(() => {
+    reset(hotel);
+  }, [hotel, reset]);
 
   const onSubmit = handleSubmit((formDataJson: HotelFormData) => {
     //create new formdata object and call our api
     const formData = new FormData();
+
+    if(hotel) {
+      formData.append("hotelId", hotel._id)
+
+    }
     formData.append("name", formDataJson.name);
     formData.append("city", formDataJson.city);
     formData.append("country", formDataJson.country);
@@ -44,11 +57,19 @@ export default function ManageHotelForm({ onSave, isLoading }: Props) {
     formDataJson.facilities.forEach((facility, index) => {
       formData.append(`facilities[${index}]`, facility);
     });
-    
+
+    //[image1.jpg, images2.jpg, imge3.jpg]
+    // imageurls = [image1.jpg]
+    if(formDataJson.imageUrls) {
+      formDataJson.imageUrls.forEach((url, index) => {
+        formData.append(`imageUrls[${index}]`, url)
+      })
+    }
+
     Array.from(formDataJson.imageFiles).forEach((imageFile) => {
-        formData.append(`imageFiles`, imageFile);
+      formData.append(`imageFiles`, imageFile);
     });
-    
+
     onSave(formData);
     console.log(formData);
   });

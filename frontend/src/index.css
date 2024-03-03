@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+i{
+    font-size: 1rem;
+    color: blue;
+    background-color: red;
+}
